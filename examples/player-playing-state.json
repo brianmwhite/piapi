@@ -1,0 +1,38 @@
+{
+  "volume": 60,
+  "mute": false,
+  "equalizer": {
+    "bass": 0,
+    "treble": 0,
+    "loudness": true
+  },
+  "currentTrack": {
+    "artist": "White Noise For Baby Sleep",
+    "title": "Ocean Waves Relax",
+    "album": "Sleep Sounds For Sleeping Soundly",
+    "albumArtUri": "/getaa?u=x-file-cifs%3a%2f%2fraspberrypi%2fshare%2fmusic%2fOcean%2520Waves%2520Relax.mp3&v=56",
+    "duration": 301,
+    "uri": "x-file-cifs://raspberrypi/share/music/Ocean%20Waves%20Relax.mp3",
+    "trackUri": "x-file-cifs://raspberrypi/share/music/Ocean%20Waves%20Relax.mp3",
+    "type": "track",
+    "stationName": "",
+    "absoluteAlbumArtUri": "http://192.168.7.217:1400/getaa?u=x-file-cifs%3a%2f%2fraspberrypi%2fshare%2fmusic%2fOcean%2520Waves%2520Relax.mp3&v=56"
+  },
+  "nextTrack": {
+    "artist": "",
+    "title": "",
+    "album": "",
+    "albumArtUri": "",
+    "duration": 0,
+    "uri": ""
+  },
+  "trackNo": 1,
+  "elapsedTime": 3,
+  "elapsedTimeFormatted": "00:00:03",
+  "playbackState": "PLAYING",
+  "playMode": {
+    "repeat": "one",
+    "shuffle": false,
+    "crossfade": true
+  }
+}
