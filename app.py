@@ -14,6 +14,8 @@ sonos_office = "Office"
 state_on = True
 state_off = False
 
+whitenoise_song_title = "Beach"
+
 def sonos_api_call(action, url):
     json = "{}"
     try:
@@ -27,7 +29,7 @@ def sonos_api_call(action, url):
 def sonos_api_check_if_beachisplaying(sonos_player):
     try:
         json = sonos_api_call(f"[{sonos_player}] get state", f"{sonos_api_url}/{sonos_player}/state")
-        if json["playbackState"] == "PLAYING" and json["currentTrack"]["title"] == "Ocean Waves Relax":
+        if json["playbackState"] == "PLAYING" and json["currentTrack"]["title"] == whitenoise_song_title:
             return True
         else:
             return False
