@@ -36,10 +36,10 @@ def sonos_api_check_if_beachisplaying(sonos_player):
     except:
         return False
 
-def sonos_api_repeatone(sonos_player, desired_state):
+def sonos_api_repeat(sonos_player, desired_state):
 
     if desired_state == state_on:
-        sonos_repeat_value = "one"
+        sonos_repeat_value = "all"
     else:
         sonos_repeat_value = "none"
        
@@ -120,7 +120,7 @@ def sonos_sleep_all():
         
         sonos_api_call("[bedroom/group] start Sleep playlist", f"{sonos_api_url}/{sonos_bedroom}/playlist/Sleep")
 
-        sonos_api_repeatone(sonos_bedroom, state_on)
+        sonos_api_repeat(sonos_bedroom, state_on)
         sonos_api_crossfade(sonos_bedroom, state_on)
     
     return '{"status":"success"}'
@@ -140,13 +140,13 @@ def sonos_wake_all():
     sonos_api_call("[living room] set volume", f"{sonos_api_url}/{sonos_livingroom}/volume/30")
     sonos_api_call("[owen's room] set volume", f"{sonos_api_url}/{sonos_owens_room}/volume/20")
     
-    sonos_api_repeatone(sonos_bedroom, state_off)
+    sonos_api_repeat(sonos_bedroom, state_off)
     sonos_api_crossfade(sonos_bedroom, state_off)
     
-    sonos_api_repeatone(sonos_livingroom, state_off)
+    sonos_api_repeat(sonos_livingroom, state_off)
     sonos_api_crossfade(sonos_livingroom, state_off)
     
-    sonos_api_repeatone(sonos_owens_room, state_off)
+    sonos_api_repeat(sonos_owens_room, state_off)
     sonos_api_crossfade(sonos_owens_room, state_off)
     
     return '{"status":"success"}'
@@ -157,7 +157,7 @@ def sonos_sleep_owen():
     sonos_api_call("[owen's room] ungroup", f"{sonos_api_url}/{sonos_owens_room}/leave")
     sonos_api_call("[owen's room] set volume", f"{sonos_api_url}/{sonos_owens_room}/volume/60")
     
-    sonos_api_repeatone(sonos_owens_room, state_on)
+    sonos_api_repeat(sonos_owens_room, state_on)
     sonos_api_crossfade(sonos_owens_room, state_on)
     
     sonos_api_call("[owen's room] start Sleep playlist", f"{sonos_api_url}/{sonos_owens_room}/playlist/Sleep")
@@ -170,7 +170,7 @@ def sonos_wake_owen():
     sonos_api_call("[owen's room] ungroup", f"{sonos_api_url}/{sonos_owens_room}/leave")
     sonos_api_call("[owen's room] set volume", f"{sonos_api_url}/{sonos_owens_room}/volume/20")
     
-    sonos_api_repeatone(sonos_owens_room, state_off)
+    sonos_api_repeat(sonos_owens_room, state_off)
     sonos_api_crossfade(sonos_owens_room, state_off)
     
     return '{"status":"success"}'
