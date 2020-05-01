@@ -14,7 +14,11 @@ sonos_office = "Office"
 state_on = True
 state_off = False
 
-whitenoise_song_title = "Beach"
+repeat_all_value = "all"
+repeat_off_value = "none"
+
+crossfade_on_value = "on"
+crossfade_off_value = "off"
 
 def sonos_api_call(action, url):
     json = "{}"
@@ -29,7 +33,7 @@ def sonos_api_call(action, url):
 def sonos_api_check_if_beachisplaying(sonos_player):
     try:
         json = sonos_api_call(f"[{sonos_player}] get state", f"{sonos_api_url}/{sonos_player}/state")
-        if json["playbackState"] == "PLAYING" and json["currentTrack"]["title"] == whitenoise_song_title:
+        if json["playbackState"] == "PLAYING" and json["playMode"]["repeat"] == repeat_all_value and json["playMode"]["crossfade"] == crossfade_on_value:
             return True
         else:
             return False
@@ -39,9 +43,9 @@ def sonos_api_check_if_beachisplaying(sonos_player):
 def sonos_api_repeat(sonos_player, desired_state):
 
     if desired_state == state_on:
-        sonos_repeat_value = "all"
+        sonos_repeat_value = repeat_all_value
     else:
-        sonos_repeat_value = "none"
+        sonos_repeat_value = repeat_off_value
        
     attempt_number = 1
     max_number_of_attempts = 5
@@ -64,9 +68,9 @@ def sonos_api_repeat(sonos_player, desired_state):
 def sonos_api_crossfade(sonos_player, desired_state):
 
     if desired_state == state_on:
-        sonos_crossfade_value = "on"
+        sonos_crossfade_value = crossfade_on_value
     else:
-        sonos_crossfade_value = "off"
+        sonos_crossfade_value = crossfade_off_value
        
     attempt_number = 1
     max_number_of_attempts = 5
