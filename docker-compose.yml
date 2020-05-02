@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
     environment:
       HUE_USER: ${HUE_USER}
-      HUE_IP: ${HUE_HUB_IP}
+      HUE_HUB_IP: ${HUE_HUB_IP}
       SONOS_API_IP: ${SONOS_API_IP}
     network_mode: host
     restart: always
