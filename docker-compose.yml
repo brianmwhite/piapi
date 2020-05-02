@@ -8,10 +8,10 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - HUE_USER: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-      - HUE_IP: XXX.XXX.X.XX
-      - HUE_ADDR: XXX.XXX.X.XX
-      - SONOS_API_IP: XXX.XXX.X.XX:XXXX
+      HUE_USER: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      HUE_IP: XXX.XXX.X.XX
+      HUE_ADDR: XXX.XXX.X.XX
+      SONOS_API_IP: XXX.XXX.X.XX:XXXX
     network_mode: host
     restart: always
     ports:
