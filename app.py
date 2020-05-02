@@ -1,10 +1,12 @@
 from flask import Flask
 import time
 import requests
+import os
 
 app = Flask(__name__)
 
-SONOS_API_URL = "http://192.168.7.97:5005"
+SONOS_API_IP = os.environ["SONOS_API_IP"]
+SONOS_API_URL = f"http://{SONOS_API_IP}"
 
 SONOS_OWENS_ROOM = "Owen%E2%80%99s%20Room"
 SONOS_BEDROOM = "Bedroom"
@@ -20,6 +22,30 @@ REPEAT_OFF_VALUE = "none"
 CROSSFADE_ON_VALUE = "on"
 CROSSFADE_OFF_VALUE = "off"
 
+HUE_USER = os.environ["HUE_USER"]
+HUE_IP = os.environ["HUE_IP"]
+HUE_ADDR = f"http://{HUE_IP}/api"
+HUEGO_ID = 2
+HUE_STATE_URL = f"{HUE_ADDR}/{HUE_USER}/lights/{HUEGO_ID}/state"
+
+HUE_WHITE_VALUE = '{"on": true, "bri": 254, "hue": 41402, "sat": 74, "effect": "none", "xy": [0.3155, 0.3313 ], "ct": 158}'
+HUE_RED_VALUE = '{"on": true, "bri": 254, "hue": 65202, "sat": 254, "effect": "none", "xy": [0.6817, 0.3036 ], "ct": 153 }'
+HUE_OFF_VALUE = '{"on":false}'
+
+def huego_setstate(action, value):
+    r = requests.put(HUE_STATE_URL, data=value)
+    json_response = r.text
+    print(f"Hue set state {action}={json_response}")
+    print(json_response)
+    return json_response
+
+@app.route("/hue/video/on")
+def huego_video_on_action():
+    return huego_setstate("video on",HUE_RED_VALUE)
+
+@app.route("/hue/video/off")
+def huego_video_off_action():
+    return huego_setstate("video off",HUE_OFF_VALUE)
 
 def sonos_api_call(action, url):
     json = "{}"
