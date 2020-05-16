@@ -30,25 +30,72 @@ CROSSFADE_OFF_VALUE = "off"
 HUE_USER = os.environ["HUE_USER"]
 HUE_HUB_IP = os.environ["HUE_HUB_IP"]
 HUEGO_ID = 2
-HUE_STATE_URL = f"http://{HUE_HUB_IP}/api/{HUE_USER}/lights/{HUEGO_ID}/state"
+HUE_SET_STATE_URL = f"http://{HUE_HUB_IP}/api/{HUE_USER}/lights/{HUEGO_ID}/state"
+HUE_GET_STATE_URL = f"http://{HUE_HUB_IP}/api/{HUE_USER}/lights/{HUEGO_ID}"
 HUE_WHITE_VALUE = '{"on": true, "bri": 254, "hue": 41402, "sat": 74, "effect": "none", "xy": [0.3155, 0.3313 ], "ct": 158}'
 HUE_RED_VALUE = '{"on": true, "bri": 254, "hue": 65202, "sat": 254, "effect": "none", "xy": [0.6817, 0.3036 ], "ct": 153 }'
 HUE_OFF_VALUE = '{"on":false}'
 
 def huego_setstate(action, value):
-    r = requests.put(HUE_STATE_URL, data=value)
+    r = requests.put(HUE_SET_STATE_URL, data=value)
     json_response = r.text
     print(f"Hue set state {action}={json_response}")
     print(json_response)
     return json_response
 
+def huego_check_if_alert_is_on():
+    r = requests.get(HUE_GET_STATE_URL)
+    json_response = r.json()
+    if json_response["state"]["on"] == True and json_response["state"]["hue"] == 65202 and json_response["state"]["sat"] == 254:
+        return True
+    else:
+        return False
+
+def huego_check_if_light_is_off():
+    r = requests.get(HUE_GET_STATE_URL)
+    json_response = r.json()
+    if json_response["state"]["on"] == False:
+        return True
+    else:
+        return False
+
+def huego_video_alert_on():
+    attempt_number = 1
+    max_number_of_attempts = 5
+    value_is_correct = False
+    json_response = "{}"
+
+    while value_is_correct == False and attempt_number <= max_number_of_attempts:
+        json_response = huego_setstate("video on",HUE_RED_VALUE)
+        if huego_check_if_alert_is_on():
+            value_is_correct = True
+        else:
+            attempt_number += 1
+            time.sleep(1)
+    return json_response
+
+def huego_video_alert_off():   
+    attempt_number = 1
+    max_number_of_attempts = 5
+    value_is_correct = False
+    json_response = "{}"
+
+    while value_is_correct == False and attempt_number <= max_number_of_attempts:
+        json_response = huego_setstate("video off",HUE_OFF_VALUE)
+        if huego_check_if_light_is_off():
+            value_is_correct = True
+        else:
+            attempt_number += 1
+            time.sleep(1)
+    return json_response
+
 @app.route("/videoalert/on")
 def huego_video_on_action():
-    return huego_setstate("video on",HUE_RED_VALUE)
+    return huego_video_alert_on()
 
 @app.route("/videoalert/off")
 def huego_video_off_action():
-    return huego_setstate("video off",HUE_OFF_VALUE)
+    return huego_video_alert_off()
 
 def sonos_api_call(action, url):
     json = "{}"
