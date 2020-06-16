@@ -258,7 +258,8 @@ def sonos_wake_owen():
 
 @app.route("/sonos/officestop")
 def sonos_office_stop():
-    sonos_api_call("[office] pause", f"{SONOS_API_URL}/{SONOS_OFFICE}/pause")
+    sonos_api_call("[office] mute", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/mute")
     sonos_api_call("[office] ungroup", f"{SONOS_API_URL}/{SONOS_OFFICE}/leave")
-    
+    sonos_api_call("[office] pause", f"{SONOS_API_URL}/{SONOS_OFFICE}/pause")
+
     return '{"status":"success"}'
