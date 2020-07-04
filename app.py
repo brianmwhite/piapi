@@ -33,18 +33,18 @@ HUEGO_ID = 2
 HUE_SET_STATE_URL = f"http://{HUE_HUB_IP}/api/{HUE_USER}/lights/{HUEGO_ID}/state"
 HUE_GET_STATE_URL = f"http://{HUE_HUB_IP}/api/{HUE_USER}/lights/{HUEGO_ID}"
 
-HUE_RED_VALUE = '{"on": true, "bri": 254, "hue": 65202, "sat": 254, "effect": "none", "xy": [0.6817, 0.3036 ], "ct": 153 }'
-HUE_ORANGE_VALUE = ''
-HUE_YELLOW_VALUE = ''
-HUE_GREEN_VALUE = ''
-HUE_BLUE_VALUE = ''
-HUE_PURPLE_VALUE = ''
-HUE_WHITE_VALUE = '{"on": true, "bri": 254, "hue": 41402, "sat": 74, "effect": "none", "xy": [0.3155, 0.3313 ], "ct": 158}'
-HUE_OFF_VALUE = '{"on":false}'
+HUE_RED_VALUE =     '{"on": true, "bri": 254, "hue": 65202, "sat": 254, "effect": "none", "xy": [0.6817, 0.3036], "ct": 153 }'
+HUE_ORANGE_VALUE =  '{"on": true, "bri": 254, "hue": 3224, "sat": 254, "effect": "none", "xy": [0.6179, 0.3679], "ct": 153 }'
+HUE_YELLOW_VALUE =  '{"on": true, "bri": 254, "hue": 8414, "sat": 254, "effect": "none", "xy": [0.5201, 0.4370], "ct": 484 }'
+HUE_GREEN_VALUE =   '{"on": true, "bri": 254, "hue": 21670, "sat": 254, "effect": "none", "xy": [0.2500,0.6399], "ct": 153 }'
+HUE_BLUE_VALUE =    '{"on": true, "bri": 254, "hue": 42202, "sat": 254, "effect": "none", "xy": [0.1570,0.1963], "ct": 153 }'
+HUE_PURPLE_VALUE =  '{"on": true, "bri": 254, "hue": 49429, "sat": 220, "effect": "none", "xy": [0.2736,0.1323], "ct": 153 }'
+HUE_PINK_VALUE =    '{"on": true, "bri": 254, "hue": 58433, "sat": 248, "effect": "none", "xy": [0.4816,0.2118], "ct": 406 }'
+HUE_WHITE_VALUE =   '{"on": true, "bri": 254, "hue": 41402, "sat": 74, "effect": "none", "xy": [0.3155, 0.3313 ], "ct": 158}'
+HUE_OFF_VALUE =     '{"on":false}'
 
-def hue_colorname_to_value(color_name):
+def lookup_hue_colorname_to_value(color_name):
     hue_color_value = HUE_OFF_VALUE
-    color_name = color_name.upper()
     if color_name == "RED":
         hue_color_value = HUE_RED_VALUE
     elif color_name == "ORANGE":
@@ -57,6 +57,8 @@ def hue_colorname_to_value(color_name):
         hue_color_value = HUE_BLUE_VALUE
     elif color_name == "PURPLE":
         hue_color_value = HUE_PURPLE_VALUE
+    elif color_name == "PINK":
+        hue_color_value = HUE_PINK_VALUE
     elif color_name == "WHITE":
         hue_color_value = HUE_WHITE_VALUE
     elif color_name == "OFF":
@@ -70,66 +72,55 @@ def huego_setstate(action, value):
     print(json_response)
     return json_response
 
-def huego_check_if_light_is_on():
+def huego_check_if_light_is_correct_state(desired_state):
     r = requests.get(HUE_GET_STATE_URL)
     json_response = r.json()
-    if json_response["state"]["on"] == True:
+    if json_response["state"]["on"] == desired_state:
         return True
     else:
         return False
+
+def huego_check_if_light_is_on():
+    return huego_check_if_light_is_correct_state(True)
 
 def huego_check_if_light_is_off():
-    r = requests.get(HUE_GET_STATE_URL)
-    json_response = r.json()
-    if json_response["state"]["on"] == False:
-        return True
-    else:
-        return False
+    return huego_check_if_light_is_correct_state(False)
 
-def huego_light_on_to_color(hue_value):
+def huego_light_on_to_color(color_name):
     attempt_number = 1
     max_number_of_attempts = 5
     value_is_correct = False
     json_response = "{}"
+    hue_value = lookup_hue_colorname_to_value(color_name)
 
     while value_is_correct == False and attempt_number <= max_number_of_attempts:
-        json_response = huego_setstate("video on",hue_value)
-        if huego_check_if_light_is_on():
-            value_is_correct = True
+        json_response = huego_setstate(color_name, hue_value)
+        
+        if color_name == "OFF":
+            if huego_check_if_light_is_off():
+                value_is_correct = True 
         else:
+            if huego_check_if_light_is_on():
+                value_is_correct = True 
+
+        if not value_is_correct:
             attempt_number += 1
             time.sleep(1)
-    return json_response
 
-def huego_video_alert_on():
-    return huego_light_on_to_color(HUE_RED_VALUE)
-
-def huego_video_alert_off():   
-    attempt_number = 1
-    max_number_of_attempts = 5
-    value_is_correct = False
-    json_response = "{}"
-
-    while value_is_correct == False and attempt_number <= max_number_of_attempts:
-        json_response = huego_setstate("video off",HUE_OFF_VALUE)
-        if huego_check_if_light_is_off():
-            value_is_correct = True
-        else:
-            attempt_number += 1
-            time.sleep(1)
     return json_response
 
 @app.route("/videoalert/on")
 def huego_video_on_action():
-    return huego_video_alert_on()
+    return huego_light_on_to_color("RED")
 
 @app.route("/videoalert/off")
 def huego_video_off_action():
-    return huego_video_alert_off()
+    return huego_light_on_to_color("OFF")
 
 @app.route("/alert/setcolor/<color>")
-def apiroute_huego_alert_color(color):
-    return huego_light_on_to_color(color)
+def huego_alert_color_action(color):
+    color_name = color.upper()
+    return huego_light_on_to_color(color_name)
 
 def sonos_api_call(action, url):
     json = "{}"
@@ -295,22 +286,3 @@ def sonos_office_stop():
     sonos_api_call("[office] mute", f"{SONOS_API_URL}/{SONOS_OFFICE}/mute")
     sonos_api_call("[office] ungroup", f"{SONOS_API_URL}/{SONOS_OFFICE}/leave")
     return '{"status":"success"}'
-
-# hue color
-# orange #
-# {"state":{"on":true,"bri":254,"hue":3224,"sat":254,"effect":"none","xy":[0.6179,0.3679],"ct":153,"alert":"none","colormode":"xy","mode":"homeautomation","reachable":true},"swupdate":{"state":"noupdates","lastinstall":"2020-03-10T18:52:56"},"type":"Extended color light","name":"Hue Go","modelid":"LLC020","manufacturername":"Signify Netherlands B.V.","productname":"Hue go","capabilities":{"certified":true,"control":{"mindimlevel":40,"maxlumen":300,"colorgamuttype":"C","colorgamut":[[0.6915,0.3083],[0.1700,0.7000],[0.1532,0.0475]],"ct":{"min":153,"max":500}},"streaming":{"renderer":true,"proxy":true}},"config":{"archetype":"huego","function":"decorative","direction":"omnidirectional","startup":{"mode":"powerfail","configured":true}},"uniqueid":"00:17:88:01:01:19:49:1c-0b","swversion":"5.130.1.30000"}
-# 
-# yellow #
-# {"state":{"on":true,"bri":254,"hue":8414,"sat":254,"effect":"none","xy":[0.5201,0.4370],"ct":484,"alert":"none","colormode":"xy","mode":"homeautomation","reachable":true},"swupdate":{"state":"noupdates","lastinstall":"2020-03-10T18:52:56"},"type":"Extended color light","name":"Hue Go","modelid":"LLC020","manufacturername":"Signify Netherlands B.V.","productname":"Hue go","capabilities":{"certified":true,"control":{"mindimlevel":40,"maxlumen":300,"colorgamuttype":"C","colorgamut":[[0.6915,0.3083],[0.1700,0.7000],[0.1532,0.0475]],"ct":{"min":153,"max":500}},"streaming":{"renderer":true,"proxy":true}},"config":{"archetype":"huego","function":"decorative","direction":"omnidirectional","startup":{"mode":"powerfail","configured":true}},"uniqueid":"00:17:88:01:01:19:49:1c-0b","swversion":"5.130.1.30000"}
-# 
-# green #
-# {"state":{"on":true,"bri":254,"hue":21670,"sat":254,"effect":"none","xy":[0.2500,0.6399],"ct":153,"alert":"none","colormode":"xy","mode":"homeautomation","reachable":true},"swupdate":{"state":"noupdates","lastinstall":"2020-03-10T18:52:56"},"type":"Extended color light","name":"Hue Go","modelid":"LLC020","manufacturername":"Signify Netherlands B.V.","productname":"Hue go","capabilities":{"certified":true,"control":{"mindimlevel":40,"maxlumen":300,"colorgamuttype":"C","colorgamut":[[0.6915,0.3083],[0.1700,0.7000],[0.1532,0.0475]],"ct":{"min":153,"max":500}},"streaming":{"renderer":true,"proxy":true}},"config":{"archetype":"huego","function":"decorative","direction":"omnidirectional","startup":{"mode":"powerfail","configured":true}},"uniqueid":"00:17:88:01:01:19:49:1c-0b","swversion":"5.130.1.30000"}
-# 
-# blue #
-# {"state":{"on":true,"bri":254,"hue":42202,"sat":254,"effect":"none","xy":[0.1570,0.1963],"ct":153,"alert":"none","colormode":"xy","mode":"homeautomation","reachable":true},"swupdate":{"state":"noupdates","lastinstall":"2020-03-10T18:52:56"},"type":"Extended color light","name":"Hue Go","modelid":"LLC020","manufacturername":"Signify Netherlands B.V.","productname":"Hue go","capabilities":{"certified":true,"control":{"mindimlevel":40,"maxlumen":300,"colorgamuttype":"C","colorgamut":[[0.6915,0.3083],[0.1700,0.7000],[0.1532,0.0475]],"ct":{"min":153,"max":500}},"streaming":{"renderer":true,"proxy":true}},"config":{"archetype":"huego","function":"decorative","direction":"omnidirectional","startup":{"mode":"powerfail","configured":true}},"uniqueid":"00:17:88:01:01:19:49:1c-0b","swversion":"5.130.1.30000"}
-# 
-# purple #
-# {"state":{"on":true,"bri":254,"hue":49429,"sat":220,"effect":"none","xy":[0.2736,0.1323],"ct":153,"alert":"none","colormode":"xy","mode":"homeautomation","reachable":true},"swupdate":{"state":"noupdates","lastinstall":"2020-03-10T18:52:56"},"type":"Extended color light","name":"Hue Go","modelid":"LLC020","manufacturername":"Signify Netherlands B.V.","productname":"Hue go","capabilities":{"certified":true,"control":{"mindimlevel":40,"maxlumen":300,"colorgamuttype":"C","colorgamut":[[0.6915,0.3083],[0.1700,0.7000],[0.1532,0.0475]],"ct":{"min":153,"max":500}},"streaming":{"renderer":true,"proxy":true}},"config":{"archetype":"huego","function":"decorative","direction":"omnidirectional","startup":{"mode":"powerfail","configured":true}},"uniqueid":"00:17:88:01:01:19:49:1c-0b","swversion":"5.130.1.30000"}
-# 
-# pink #
-# {"state":{"on":true,"bri":254,"hue":58433,"sat":248,"effect":"none","xy":[0.4816,0.2118],"ct":406,"alert":"none","colormode":"xy","mode":"homeautomation","reachable":true},"swupdate":{"state":"noupdates","lastinstall":"2020-03-10T18:52:56"},"type":"Extended color light","name":"Hue Go","modelid":"LLC020","manufacturername":"Signify Netherlands B.V.","productname":"Hue go","capabilities":{"certified":true,"control":{"mindimlevel":40,"maxlumen":300,"colorgamuttype":"C","colorgamut":[[0.6915,0.3083],[0.1700,0.7000],[0.1532,0.0475]],"ct":{"min":153,"max":500}},"streaming":{"renderer":true,"proxy":true}},"config":{"archetype":"huego","function":"decorative","direction":"omnidirectional","startup":{"mode":"powerfail","configured":true}},"uniqueid":"00:17:88:01:01:19:49:1c-0b","swversion":"5.130.1.30000"}
