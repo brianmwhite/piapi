@@ -135,7 +135,7 @@ def sonos_api_call(action, url):
 def sonos_api_check_if_beachisplaying(sonos_player):
     try:
         json = sonos_api_call(f"[{sonos_player}] get state", f"{SONOS_API_URL}/{sonos_player}/state")
-        if json["playbackState"] == "PLAYING" and json["playMode"]["repeat"] == REPEAT_ALL_VALUE and json["playMode"]["crossfade"] == CROSSFADE_ON_VALUE:
+        if json["playbackState"] == "PLAYING" and json["playMode"]["repeat"] == REPEAT_ALL_VALUE:
             return True
         else:
             return False
