@@ -272,8 +272,8 @@ def sonos_sleep_owen():
 
 @app.route("/sonos/wake/owen")
 def sonos_wake_owen():
-    sonos_api_call("[owen's room] pause", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/pause")
     sonos_api_call("[owen's room] ungroup", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/leave")
+    sonos_api_call("[owen's room] pause", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/pause")
     sonos_api_call("[owen's room] set volume", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/volume/20")
     
     sonos_api_repeat(SONOS_OWENS_ROOM, STATE_OFF)
@@ -302,8 +302,8 @@ def sonos_sleep_bedroom():
 
 @app.route("/sonos/wake/bedroom")
 def sonos_wake_bedroom():
-    sonos_api_call("[bedroom] pause", f"{SONOS_API_URL}/{SONOS_BEDROOM}/pause")
     sonos_api_call("[bedroom] ungroup", f"{SONOS_API_URL}/{SONOS_BEDROOM}/leave")
+    sonos_api_call("[bedroom] pause", f"{SONOS_API_URL}/{SONOS_BEDROOM}/pause")
     sonos_api_call("[bedroom] set volume", f"{SONOS_API_URL}/{SONOS_BEDROOM}/volume/20")
     
     sonos_api_repeat(SONOS_BEDROOM, STATE_OFF)
