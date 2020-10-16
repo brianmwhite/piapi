@@ -5,6 +5,9 @@ import os
 
 app = Flask(__name__)
 
+# jishi / node-sonos-http-api
+# https://github.com/jishi/node-sonos-http-api
+
 SONOS_API_IP = os.environ["SONOS_API_IP"]
 SONOS_API_URL = f"http://{SONOS_API_IP}"
 
