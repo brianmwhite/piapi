@@ -2,6 +2,7 @@ from flask import Flask
 import time
 import requests
 import os
+import jmespath
 
 app = Flask(__name__)
 
@@ -324,4 +325,15 @@ def sonos_office_stop():
 @app.route("/sonos/officeunmute")
 def sonos_office_unmute():
     sonos_api_call("[office] unmute", f"{SONOS_API_URL}/{SONOS_OFFICE}/unmute")
+    return '{"status":"success"}'
+
+
+@app.route("/sonos/ungroup/all")
+def sonos_ungroup_all():
+    zone_json_results = sonos_api_call("return zones status", f"{SONOS_API_URL}/zones")
+    search_expression = jmespath.compile("[].members[].roomName")
+    sonos_players = search_expression.search(zone_json_results)
+    for individual_player in sonos_players:
+        sonos_api_call(f"ungroup {individual_player}", f"{SONOS_API_URL}/{individual_player}/leave")
+        pass
     return '{"status":"success"}'
