@@ -20,12 +20,6 @@ WHITE_NOISE_TRACK_TITLE = "Beach with Cross Fade"
 STATE_ON = True
 STATE_OFF = False
 
-REPEAT_ALL_VALUE = "all"
-REPEAT_OFF_VALUE = "none"
-
-CROSSFADE_ON_VALUE = "on"
-CROSSFADE_OFF_VALUE = "off"
-
 # Instructions on creating a user on your hue hub
 # create a 'user' : curl -X POST -d '{"devicetype":"my app"}' http://$ADDR/api
 # get status of all lights : curl http://$ADDR/api/$HUE_USER/lights/
