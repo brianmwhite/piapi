@@ -193,7 +193,7 @@ def sonos_wake_all():
     
     return '{"status":"success"}'
 
-@app.route("/sonos/get_white_noise_state/Owen")
+@app.route("/sonos/get_white_noise_state/owen")
 def sonos_get_white_noise_state_owen():
     if sonos_api_check_if_beachisplaying(SONOS_OWENS_ROOM):
         return '{"white_noise_on":true}'
