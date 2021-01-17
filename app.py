@@ -193,6 +193,13 @@ def sonos_wake_all():
     
     return '{"status":"success"}'
 
+@app.route("/sonos/get_white_noise_state/Owen")
+def sonos_get_white_noise_state_owen():
+    if sonos_api_check_if_beachisplaying(SONOS_OWENS_ROOM):
+        return '{"white_noise_on":true}'
+    else:
+        return '{"white_noise_on":false}'
+
 @app.route("/sonos/sleep/owen")
 def sonos_sleep_owen():
     sonos_api_call("[owen's room] pause", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/pause")
@@ -210,6 +217,13 @@ def sonos_wake_owen():
     sonos_api_call("[owen's room] set volume", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/volume/20")
     
     return '{"status":"success"}'
+
+@app.route("/sonos/get_white_noise_state/bedroom")
+def sonos_get_white_noise_state_bedroom():
+    if sonos_api_check_if_beachisplaying(SONOS_BEDROOM):
+        return '{"white_noise_on":true}'
+    else:
+        return '{"white_noise_on":false}'
 
 @app.route("/sonos/sleep/bedroom")
 def sonos_sleep_bedroom():
