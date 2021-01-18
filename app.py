@@ -6,6 +6,7 @@ import jmespath
 import sonos_control
 
 app = Flask(__name__)
+#python3 -m flask run
 
 STATE_ON = True
 STATE_OFF = False
