@@ -38,6 +38,10 @@ def route_sonos_sleep_owen():
 def sonos_wake_owen():
     return sonos_control.sonos_wake_owen()
 
+@app.route("/sonos/downstairs/owen")
+def route_sonos_play_owen_downstairs():
+    return sonos_control.sonos_play_owen_downstairs()
+
 @app.route("/sonos/get_white_noise_state/bedroom")
 def route_sonos_get_white_noise_state_bedroom():
     return sonos_control.sonos_get_white_noise_state_bedroom()

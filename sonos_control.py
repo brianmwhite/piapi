@@ -12,6 +12,8 @@ SONOS_OWENS_ROOM = "Owen%E2%80%99s%20Room"
 SONOS_BEDROOM = "Bedroom"
 SONOS_LIVINGROOM = "Living%20Room"
 SONOS_OFFICE = "Office"
+SONOS_DOWNSTAIRS = "Downstairs"
+
 WHITE_NOISE_TRACK_TITLE = "Beach with Cross Fade"
 
 def sonos_api_call(action, url):
@@ -97,6 +99,13 @@ def sonos_sleep_owen():
     sonos_api_call("[owen's room] set volume", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/volume/60")
     
     sonos_api_call("[owen's room] start Sleep playlist", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/playlist/Sleep")
+    
+    return '{"status":"success"}'
+
+def sonos_play_owen_downstairs():
+    sonos_api_call("[downstairs] ungroup", f"{SONOS_API_URL}/{SONOS_DOWNSTAIRS}/leave")
+    sonos_api_call("[downstairs] set volume", f"{SONOS_API_URL}/{SONOS_DOWNSTAIRS}/volume/35")
+    sonos_api_call("[downstairs] start Owen playlist", f"{SONOS_API_URL}/{SONOS_DOWNSTAIRS}/playlist/Owen")
     
     return '{"status":"success"}'
 
