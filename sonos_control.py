@@ -16,19 +16,23 @@ SONOS_DOWNSTAIRS = "Downstairs"
 
 WHITE_NOISE_TRACK_TITLE = "Beach with Cross Fade"
 
+
 def sonos_api_call(action, url):
     json = "{}"
     try:
+        print(url)
         r = requests.get(url)
-        print(f"{action}={r.json()}")
         json = r.json()
+        # print(json)
     except:
         pass
     return json
 
-def sonos_api_check_if_beachisplaying(sonos_player):
+
+def sonos_whitenoise_is_on(sonos_player):
     try:
-        json = sonos_api_call(f"[{sonos_player}] get state", f"{SONOS_API_URL}/{sonos_player}/state")
+        json = sonos_api_call(
+            f"[{sonos_player}] get state", f"{SONOS_API_URL}/{sonos_player}/state")
         if json["playbackState"] == "PLAYING" and json["currentTrack"]["title"] == WHITE_NOISE_TRACK_TITLE:
             return True
         else:
@@ -36,112 +40,47 @@ def sonos_api_check_if_beachisplaying(sonos_player):
     except:
         return False
 
-def sonos_sleep_all():
 
-    if sonos_api_check_if_beachisplaying(SONOS_OWENS_ROOM):
-        sonos_api_call("[bedroom] pause", f"{SONOS_API_URL}/{SONOS_BEDROOM}/pause")
-        sonos_api_call("[living room] pause", f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/pause")
+def sonos_whitenoise_start(speaker, volume=40):
+    sonos_api_call(f"[{speaker}] pause", f"{SONOS_API_URL}/{speaker}/pause")
+    sonos_api_call(f"[{speaker}] ungroup", f"{SONOS_API_URL}/{speaker}/leave")
+    sonos_api_call(f"[{speaker}] set volume",
+                   f"{SONOS_API_URL}/{speaker}/volume/{volume}")
+    sonos_api_call(f"[{speaker}] start Sleep playlist",
+                   f"{SONOS_API_URL}/{speaker}/playlist/Sleep")
 
-        sonos_api_call("[bedroom]  ungroup", f"{SONOS_API_URL}/{SONOS_BEDROOM}/leave")
-        sonos_api_call("[living room] ungroup", f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/leave")
 
-        sonos_api_call("[bedroom] set volume", f"{SONOS_API_URL}/{SONOS_BEDROOM}/volume/40")
-        sonos_api_call("[living room] set volume", f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/volume/50")
-        
-        sonos_api_call("[bedroom] join owen's room",f"{SONOS_API_URL}/{SONOS_BEDROOM}/join/{SONOS_OWENS_ROOM}")
-        sonos_api_call("[living room] join owen's room",f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/join/{SONOS_OWENS_ROOM}")
+def sonos_whitenoise_stop(speaker, volume=20):
+    sonos_api_call(f"[{speaker}] pause", f"{SONOS_API_URL}/{speaker}/pause")
+    sonos_api_call(f"[{speaker}] set volume",
+                   f"{SONOS_API_URL}/{speaker}/volume/{volume}")
 
-    else:
-        sonos_api_call("[bedroom] pause", f"{SONOS_API_URL}/{SONOS_BEDROOM}/pause")
-        sonos_api_call("[living room] pause", f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/pause")
-        sonos_api_call("[owen's room] pause", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/pause")
-        
-        sonos_api_call("[bedroom]  ungroup", f"{SONOS_API_URL}/{SONOS_BEDROOM}/leave")
-        sonos_api_call("[living room] ungroup", f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/leave")
-        sonos_api_call("[owen's room] ungroup", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/leave")
-        
-        sonos_api_call("[bedroom] set volume", f"{SONOS_API_URL}/{SONOS_BEDROOM}/volume/40")
-        sonos_api_call("[living room] set volume", f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/volume/50")
-        sonos_api_call("[owen's room] set volume", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/volume/60")
-        
-        sonos_api_call("[living room] join bedroom",f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/join/{SONOS_BEDROOM}")
-        sonos_api_call("[owen's room] join bedroom",f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/join/{SONOS_BEDROOM}")
-        
-        sonos_api_call("[bedroom/group] start Sleep playlist", f"{SONOS_API_URL}/{SONOS_BEDROOM}/playlist/Sleep")
-
-    return '{"status":"success"}'
-
-def sonos_wake_all():
-    
-    sonos_api_call("[bedroom] pause", f"{SONOS_API_URL}/{SONOS_BEDROOM}/pause")
-    sonos_api_call("[living room] pause", f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/pause")
-    sonos_api_call("[owen's room] pause", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/pause")
-
-    sonos_api_call("[bedroom]  ungroup", f"{SONOS_API_URL}/{SONOS_BEDROOM}/leave")
-    sonos_api_call("[living room] ungroup", f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/leave")
-    sonos_api_call("[owen's room] ungroup", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/leave")
-    
-    sonos_api_call("[bedroom] set volume", f"{SONOS_API_URL}/{SONOS_BEDROOM}/volume/20")
-    sonos_api_call("[living room] set volume", f"{SONOS_API_URL}/{SONOS_LIVINGROOM}/volume/30")
-    sonos_api_call("[owen's room] set volume", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/volume/20")
-    
-    return '{"status":"success"}'
-
-def sonos_get_white_noise_state_owen():
-    if sonos_api_check_if_beachisplaying(SONOS_OWENS_ROOM):
-        return '{"white_noise_on":true}'
-    else:
-        return '{"white_noise_on":false}'
-
-def sonos_sleep_owen():
-    sonos_api_call("[owen's room] pause", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/pause")
-    sonos_api_call("[owen's room] ungroup", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/leave")
-    sonos_api_call("[owen's room] set volume", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/volume/60")
-    
-    sonos_api_call("[owen's room] start Sleep playlist", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/playlist/Sleep")
-    
-    return '{"status":"success"}'
 
 def sonos_play_owen_downstairs():
-    sonos_api_call("[downstairs] ungroup", f"{SONOS_API_URL}/{SONOS_DOWNSTAIRS}/leave")
-    sonos_api_call("[downstairs] set volume", f"{SONOS_API_URL}/{SONOS_DOWNSTAIRS}/volume/35")
-    sonos_api_call("[downstairs] start Owen playlist", f"{SONOS_API_URL}/{SONOS_DOWNSTAIRS}/playlist/Owen")
-    
-    return '{"status":"success"}'
-
-def sonos_wake_owen():
-    sonos_api_call("[owen's room] ungroup", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/leave")
-    sonos_api_call("[owen's room] pause", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/pause")
-    sonos_api_call("[owen's room] set volume", f"{SONOS_API_URL}/{SONOS_OWENS_ROOM}/volume/20")
-    
-    return '{"status":"success"}'
-
-def sonos_get_white_noise_state_bedroom():
-    if sonos_api_check_if_beachisplaying(SONOS_BEDROOM):
-        return '{"white_noise_on":true}'
-    else:
-        return '{"white_noise_on":false}'
-
-def sonos_sleep_bedroom():
-
-    if sonos_api_check_if_beachisplaying(SONOS_OWENS_ROOM):
-        sonos_api_call("[bedroom] pause", f"{SONOS_API_URL}/{SONOS_BEDROOM}/pause")
-        sonos_api_call("[bedroom] ungroup", f"{SONOS_API_URL}/{SONOS_BEDROOM}/leave")
-        sonos_api_call("[bedroom] set volume", f"{SONOS_API_URL}/{SONOS_BEDROOM}/volume/40")       
-        sonos_api_call("[bedroom] join owen's room",f"{SONOS_API_URL}/{SONOS_BEDROOM}/join/{SONOS_OWENS_ROOM}")
-    else:
-        sonos_api_call("[bedroom] pause", f"{SONOS_API_URL}/{SONOS_BEDROOM}/pause")       
-        sonos_api_call("[bedroom] ungroup", f"{SONOS_API_URL}/{SONOS_BEDROOM}/leave")
-        sonos_api_call("[bedroom] set volume", f"{SONOS_API_URL}/{SONOS_BEDROOM}/volume/40")
-        sonos_api_call("[bedroom/group] start Sleep playlist", f"{SONOS_API_URL}/{SONOS_BEDROOM}/playlist/Sleep")
+    sonos_api_call("[downstairs] ungroup",
+                   f"{SONOS_API_URL}/{SONOS_DOWNSTAIRS}/leave")
+    sonos_api_call("[downstairs] set volume",
+                   f"{SONOS_API_URL}/{SONOS_DOWNSTAIRS}/volume/35")
+    sonos_api_call("[downstairs] start Owen playlist",
+                   f"{SONOS_API_URL}/{SONOS_DOWNSTAIRS}/playlist/Owen")
 
     return '{"status":"success"}'
 
-def sonos_wake_bedroom():
-    sonos_api_call("[bedroom] ungroup", f"{SONOS_API_URL}/{SONOS_BEDROOM}/leave")
-    sonos_api_call("[bedroom] pause", f"{SONOS_API_URL}/{SONOS_BEDROOM}/pause")
-    sonos_api_call("[bedroom] set volume", f"{SONOS_API_URL}/{SONOS_BEDROOM}/volume/20")
+
+def sonos_play_playlist(speaker, playlist, volume=None, shuffle=None, repeat=None):
+    sonos_api_call(f"[{speaker}] ungroup", f"{SONOS_API_URL}/{speaker}/leave")
+
+    if volume != None:
+        sonos_api_call("[{speaker}] set volume", f"{SONOS_API_URL}/{speaker}/volume/{volume}")
     
+    if shuffle != None:
+        sonos_api_call("[{speaker}] set shuffle", f"{SONOS_API_URL}/{speaker}/shuffle/{shuffle}")
+
+    if repeat != None: 
+        sonos_api_call("[{speaker}] set repeat", f"{SONOS_API_URL}/{speaker}/repeat/{repeat}")
+
+    sonos_api_call("[{speaker}] start playlist", f"{SONOS_API_URL}/{speaker}/playlist/{playlist}")
+
     return '{"status":"success"}'
 
 
@@ -150,16 +89,19 @@ def sonos_office_stop():
     sonos_api_call("[office] ungroup", f"{SONOS_API_URL}/{SONOS_OFFICE}/leave")
     return '{"status":"success"}'
 
+
 def sonos_office_unmute():
     sonos_api_call("[office] unmute", f"{SONOS_API_URL}/{SONOS_OFFICE}/unmute")
     return '{"status":"success"}'
 
 
 def sonos_ungroup_all():
-    zone_json_results = sonos_api_call("return zones status", f"{SONOS_API_URL}/zones")
+    zone_json_results = sonos_api_call(
+        "return zones status", f"{SONOS_API_URL}/zones")
     search_expression = jmespath.compile("[].members[].roomName")
     sonos_players = search_expression.search(zone_json_results)
     for individual_player in sonos_players:
-        sonos_api_call(f"ungroup {individual_player}", f"{SONOS_API_URL}/{individual_player}/leave")
+        sonos_api_call(f"ungroup {individual_player}",
+                       f"{SONOS_API_URL}/{individual_player}/leave")
         pass
     return '{"status":"success"}'
